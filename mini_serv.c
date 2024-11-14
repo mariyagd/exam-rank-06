@@ -249,12 +249,18 @@ int main (int ac, char **av)
 
 	// bind the server FD to the port and the address IPv4
 	if (bind(server_fd, (const struct sockaddr * )&server_address, sizeof(server_address)) < 0)
+	{
+		close(server_fd);
 		fatal_error();
+	}
 
 	// Call listen to set the server ready for incoming connections
-	// SOMAXCONN is the maximum number of pending connections that can be queued up before the system starts rejecting new connections
+	// SOMAXCONN (usually 128) is the maximum number of pending connections that can be queued up before the system starts rejecting new connections
 	if (listen(server_fd, SOMAXCONN) < 0)
+	{
+		close(server_fd);
 		fatal_error();
+	}
 
 	//printf("start loop\n");
 	// while the server is active
