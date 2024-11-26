@@ -1,0 +1,70 @@
+Dossier: mini_db
+Fichiers: *.cpp, *.hpp
+
+Écrire un programme qui permet de créer une base de données.
+
+Le programme accepte deux arguments : le port et le fichier qui contient la base de données.
+
+Le programme doit créer un serveur qui écoute sur le port spécifié et sur adresse 127.0.0.1
+
+Au début le programme doit vérifier si le fichier existe "and load it". 
+(donc je comprends qu'il ne faut pas créer le fichier s'il existe déjà et si le fichier a déjà des entrées, il faut les mettre dans le conteneur)
+
+Pour qu'un client puisse interagir avec la base de données, il utilise les commandes suivantes :
+- POST <key> <value>    -> ajoute une nouvelle entrée dans la base de données, retourne "0\n" 
+			   (et si l'entrée existe déjà avec la même clé et la même valeur, faut-il retourner "0\n" ??? )
+			   (et si l'entrée existe déjà la même clé et une différente valeur, faut-il corriger et retourner "0\n" ??? )
+- GET <key>             -> récupère la valeur associée à une clé, retourne "0 <value>\n". Si la clé n'existe pas, retourne "1\n"
+- DELETE <key>          -> supprime une entrée de la base de données, retourne "0\n". Si la clé n'existe pas, retourne "1\n"
+
+Si le client envoie une commande inconnue, le serveur doit retourner "2\n".
+
+Le client peut envoyer plusieurs commandes à la suite, chaque commande est séparée par un retour à la ligne.
+Cependant, la requête sera au maximum de 1000 caractères.
+Les commandes, les clés et les valeurs ne vont jamais contenir des whitespaces.
+(il faut comprendre que les tests seront fait toujours avec des entrées correctes)
+
+Exemple d'utilisation :
+
+$ ./mini_db 1234 data.txt
+$ nc localhost 1234
+POST A B
+POST B C
+0$   // -> deux requêtes et une seule réponse !
+GET A
+0 B$
+GET C
+1$
+DELETE A
+0$
+DELETE C
+1$
+UNKNOWN_COMMAND
+2$
+
+En cas de SIGINT, le programme doit sauvegarder la base de données dans le fichier spécifié.
+
+Il faut tester le programme avec nc.
+
+Un main est donnée pour vous aider à démarrer:
+    - avec une classe Socket qui intègre les fonctions socket, bind, listen, accept
+        - le socket address (sin_addr.s_addr) est sur INADDR_ANY, mais pour l'examen, il faut le mettre sur htonl(INADDR_LOOPBACK)
+    - avec une classe Server qui initie socket et dit où commencer la loop
+
+----------------
+compilation:
+    -Wall -Wextra -Werror -o mini_db *.cpp
+
+Sujets traîtés :
+- serveur: select, send, recv, fd_set
+- conteneurs:
+	- std::map trie le conteneur par key
+	- std::vector< std::pair< std::string, std::string > >	permet de garder l'ordre
+- signaux: std::signal et volatile sig_atomic_t
+- exceptions: scope try-catch
+- fstream : pour ouvrir un fichier pour lire et écrire (sinon utiliser open, close, read et write ou (fopen, free, fclose et getline et fprintf) de C)
+- getline et istringstream : pour couper une string au niveau des \n et des espaces (sinon créer ses propres fonctions en C comme strtrim)
+- s'il faut utiliser plusieurs fichier .hpp -> ajouter des include guards pour éviter includes circulaires
+- mettre des const partout où c'est possible
+- reinterpret_cast< struct sockaddr * > pour cast un sockaddr_in en sockaddr
+----------------
