@@ -10,10 +10,9 @@
 #include <netinet/ip.h>
 #include <stdbool.h>
 
-const int    MAX_CLIENTS = FD_SETSIZE - 1;
 fd_set       active_set, read_set, write_set;
-int          client[MAX_CLIENTS];
-char         *msg[MAX_CLIENTS];
+int          client[FD_SETSIZE - 1];
+char         *msg[FD_SETSIZE - 1];
 int          max_fd = 0;
 int          sockfd = 0;
 int          id = 0;

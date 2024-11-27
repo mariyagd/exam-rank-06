@@ -3,7 +3,7 @@
 volatile std::sig_atomic_t   Server::_signalReceived = false;
 
 
-Server::Server(const int & port, const std::string & filePath) : _servSock(port), _db(filePath), _maxfd(-1)
+Server::Server(const int & port, const char * filePath) : _servSock(port), _db(filePath), _maxfd(-1)
 {
     FD_ZERO(&_active_set);
     FD_ZERO(&_read_set);
@@ -28,6 +28,9 @@ Server::~Server()
     {
         if (FD_ISSET(fd, &_active_set))
         {
+            send(fd, "", 0, 0);
+            printf("closing fd = %d\n", fd);
+            shutdown(fd, SHUT_RDWR);
             close(fd);
         }
     }

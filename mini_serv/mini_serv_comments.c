@@ -21,7 +21,6 @@
 
 // FD_SETSIZE is the maximum number of file descriptors in a set (1024)
 // 1 file descriptor is used for the server, so the maximum number of clients is 1023
-const int	MAX_CLIENTS = FD_SETSIZE - 1;
 
 // set of file descriptors set for select function
 // read_set are the file descriptors that are ready to send data to the server. The data is available via recv function
@@ -29,10 +28,10 @@ const int	MAX_CLIENTS = FD_SETSIZE - 1;
 fd_set		active_set, read_set, write_set;
 
 // Array that stores the client's logical id for each client FD
-int			client[MAX_CLIENTS];
+int			client[FD_SETSIZE - 1];
 
 // Array that stores the message for each client FD
-char		*msg[MAX_CLIENTS];
+char		*msg[FD_SETSIZE - 1];
 
 // id is the logical id of the client
 int			id = 0;

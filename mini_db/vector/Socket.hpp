@@ -9,6 +9,7 @@
 #include <sys/errno.h>
 #include <string>
 #include <fcntl.h>
+#include <sys/types.h>
 
 class Socket 
 {

@@ -3,23 +3,21 @@
 #include <unistd.h>
 #include <netdb.h>
 #include <sys/socket.h>
-#include <sys/select.h>
 #include <netinet/in.h>
-#include <stdlib.h>
+#include <sys/select.h>
 #include <stdio.h>
-#include <signal.h>
+#include <stdlib.h>
+#include <netinet/ip.h>
+#include <sys/types.h> 
 
-fd_set			active_set, read_set, write_set;
-char			*msg[FD_SETSIZE - 1];
-int				client[FD_SETSIZE - 1];
-int				id = 0;
-int				max_fd = 0;
-int				sockfd = 0;
-char			short_buffer[50];
-char			long_buffer[4096];
-
-volatile sig_atomic_t	run = 0;
-
+fd_set		active_set, read_set, write_set;
+int			client[FD_SETSIZE - 1];
+char		*msg[FD_SETSIZE - 1];
+int			id = 0;
+int			sockfd = 0;
+int			max_fd = 0;
+char		short_buffer[50];
+char		long_buffer[4096];
 void	send_to_all(int cli, char *message)
 {
 	for (int fd = 0; fd < max_fd + 1; fd++)
@@ -133,14 +131,6 @@ void	init_globals(void)
 	memset(long_buffer, 0, sizeof(long_buffer));
 }
 
-void	sigHandler(int signal)
-{
-	if (signal == SIGINT)
-	{
-		printf("\nsignal received\n");
-		run = 1;
-	}	
-}
 
 int main(int ac, char **av) 
 {
@@ -171,15 +161,14 @@ int main(int ac, char **av)
 	if (listen(sockfd, 10) != 0)
 		close_free_exit();
 
-	signal(SIGINT, sigHandler);
 
-	while (!run)
+	while (1)
 	{
 		reset_fds();
 		
 		select(max_fd + 1, &read_set, &write_set, 0, 0);
 
-		for (int fd = 0; fd < max_fd + 1 && !run; fd++)
+		for (int fd = 0; fd < max_fd + 1; fd++)
 		{
 			if (FD_ISSET(fd, &read_set))
 			{
@@ -209,7 +198,7 @@ int main(int ac, char **av)
 							msg[fd] = 0;
 
 						}
-						sprintf(short_buffer, "server: client %d just left\n", client[cli]);
+						sprintf(short_buffer, "server: client %d just left\n", client[fd]);
 						send_to_all(fd, short_buffer);
 					}
 					else
@@ -229,5 +218,4 @@ int main(int ac, char **av)
 			}
 		}
 	}
-	close_free_exit();
 }

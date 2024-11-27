@@ -10,17 +10,21 @@
 #include <stdio.h>
 #include <sys/errno.h>
 #include <sys/socket.h>
+#include <string.h>
+#include <errno.h>
+#include <unistd.h>
+#include <cstdlib>
 
 class DataBase
 {
     private:
     std::vector< std::pair< std::string, std::string > >    _data;
-    std::string                                             _filePath;
+    const char *                                            _filePath;
     std::fstream                                            _file;
     std::string                                             _response;
 
     public:
-    DataBase(const std::string & filePath);
+    DataBase(const char * filePath);
     ~DataBase();
 
     std::vector< std::pair< std::string, std::string > >::iterator     findKey(const std::string & key);

@@ -7,6 +7,8 @@
 #include <sys/select.h>
 #include <unistd.h>
 #include <iostream>
+#include <string.h>
+#include <errno.h>
 
 class Server
 {
@@ -20,7 +22,7 @@ class Server
     static void sigHandler(int signal);
 
     public:
-    Server(const int & port, const std::string & filePath);
+    Server(const int & port, const char * filePath);
     ~Server();
     
     void    reset_fds();

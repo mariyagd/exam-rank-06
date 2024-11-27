@@ -46,7 +46,33 @@ void Socket::launch()
     {
         printf("Socket is blocking\n");
     }
+
+    int optval = 1;
+    socklen_t optlen = sizeof(optval);
+
+    int ret = 0;
     
+    ret = setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, optlen);
+    if (ret >= 0)
+    {
+        getsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, &optlen);
+        if (ret >= 0)
+        {
+            if (optval == true)
+            {
+                printf("SE_REUSEADDR is successfully set\n");
+            }
+            else
+            {
+                printf("SE_REUSEADDR is NOT set");
+                
+            }
+        }        
+    }
+    else
+    {
+        throw std::runtime_error("setsockopt: " + std::string(strerror(errno)));
+    }
 }
 
 int    Socket::getClient()
